@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Report Request Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #e9ecef;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-panel h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #27ae60;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .priority-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .priority-option {
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .priority-option:hover {
+            border-color: #3498db;
+        }
+
+        .priority-option.selected {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .priority-low { border-left-color: #27ae60; }
+        .priority-medium { border-left-color: #f39c12; }
+        .priority-high { border-left-color: #e74c3c; }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .priority-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏭 Quality Report Request Portal</h1>
+            <p>Automated Manufacturing Quality Documentation System</p>
+            <div style="margin-top: 15px;">
+                <span class="status-indicator"></span>
+                <span>AI-Powered Report Generation Active</span>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <!-- MODIFIED: Added Formspree action and method -->
+            <form id="qualityReportForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                <!-- Customer Information Section -->
+                <div class="form-section">
+                    <h3>📋 Customer Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Customer Name <span class="required">*</span></label>
+                            <input type="text" id="customerName" name="customerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyName">Company Name <span class="required">*</span></label>
+                            <input type="text" id="companyName" name="companyName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Contact Number</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Information Section -->
+                <div class="form-section">
+                    <h3>🔧 Product Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceNumber">Invoice Number <span class="required">*</span></label>
+                            <input type="text" id="invoiceNumber" name="invoiceNumber" required placeholder="INV-2024-XXXX">
+                        </div>
+                        <div class="form-group">
+                            <label for="modelName">Model Name <span class="required">*</span></label>
+                            <input type="text" id="modelName" name="modelName" required placeholder="e.g., PLC-5000X, HMI-Touch-15">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="serialNumber">Serial Number</label>
+                            <input type="text" id="serialNumber" name="serialNumber" placeholder="SN-XXXXXXXX">
+                        </div>
+                        <div class="form-group">
+                            <label for="productCategory">Product Category <span class="required">*</span></label>
+                            <select id="productCategory" name="productCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="PLC">PLC (Programmable Logic Controller)</option>
+                                <option value="HMI">HMI (Human Machine Interface)</option>
+                                <option value="SCADA">SCADA Components</option>
+                                <option value="Automotive">Automotive Parts</option>
+                                <option value="Mobility">Mobility Components</option>
+                                <option value="Industrial">Industrial Electronics</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="batchNumber">Batch/Lot Number</label>
+                        <input type="text" id="batchNumber" name="batchNumber" placeholder="LOT-2024-XXX">
+                    </div>
+                </div>
+
+                <!-- Test Report Requirements Section -->
+                <div class="form-section">
+                    <h3>📊 Test Report Requirements</h3>
+                    <div class="form-group">
+                        <label>Required Test Parameters <span class="required">*</span></label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="functionalTest" name="testParams" value="functional">
+                                <label for="functionalTest">Functional Testing</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="electricalTest" name="testParams" value="electrical">
+                                <label for="electricalTest">Electrical Parameters</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="thermalTest" name="testParams" value="thermal">
+                                <label for="thermalTest">Thermal Testing</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="vibrationTest" name="testParams" value="vibration">
+                                <label for="vibrationTest">Vibration Analysis</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="performanceTest" name="testParams" value="performance">
+                                <label for="performanceTest">Performance Metrics</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="safetyTest" name="testParams" value="safety">
+                                <label for="safetyTest">Safety Compliance</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ipcStandards" name="testParams" value="ipc">
+                                <label for="ipcStandards">IPC Standards Compliance</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="automotiveStandards" name="testParams" value="automotive">
+                                <label for="automotiveStandards">Automotive Standards (AEC-Q)</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reportFormat">Report Format</label>
+                            <select id="reportFormat" name="reportFormat">
+                                <option value="standard">Standard Report</option>
+                                <option value="detailed">Detailed Technical Report</option>
+                                <option value="summary">Executive Summary</option>
+                                <option value="compliance">Compliance Certificate Only</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryDate">Required Delivery Date</label>
+                            <input type="date" id="deliveryDate" name="deliveryDate">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request Priority Section -->
+                <div class="form-section">
+                    <h3>⚡ Request Priority</h3>
+                    <div class="priority-selector">
+                        <div class="priority-option priority-low" data-priority="low">
+                            <h4>🟢 Standard</h4>
+                            <p>3-5 Business Days</p>
+                        </div>
+                        <div class="priority-option priority-medium" data-priority="medium">
+                            <h4>🟡 Urgent</h4>
+                            <p>1-2 Business Days</p>
+                        </div>
+                        <div class="priority-option priority-high" data-priority="high">
+                            <h4>🔴 Critical</h4>
+                            <p>Same Day (Additional Charges Apply)</p>
+                        </div>
+                    </div>
+                    <input type="hidden" id="priority" name="priority" value="low">
+                </div>
+
+                <!-- Additional Information Section -->
+                <div class="form-section">
+                    <h3>📝 Additional Information</h3>
+                    <div class="form-group">
+                        <label for="specialRequirements">Special Requirements or Notes</label>
+                        <textarea id="specialRequirements" name="specialRequirements" placeholder="Please specify any special testing requirements, compliance standards, or additional documentation needed..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="purposeOfReport">Purpose of Report</label>
+                        <select id="purposeOfReport" name="purposeOfReport">
+                            <option value="">Select Purpose</option>
+                            <option value="customer_compliance">Customer Compliance Verification</option>
+                            <option value="regulatory_submission">Regulatory Submission</option>
+                            <option value="warranty_claim">Warranty Claim Support</option>
+                            <option value="quality_audit">Quality Audit</option>
+                            <option value="supplier_qualification">Supplier Qualification</option>
+                            <option value="process_improvement">Process Improvement</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ADDED: Hidden fields for workflow integration -->
+                <input type="hidden" name="_subject" value="New Quality Report Request">
+                <input type="hidden" name="_cc" value="quality@yourcompany.com">
+                <input type="hidden" name="_next" value="https://yoursite.com/thank-you.html">
+
+                <div class="info-panel">
+                    <h4>📌 Important Information</h4>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>All requests are processed automatically using AI-powered systems</li>
+                        <li>Test reports include complete traceability to original test data</li>
+                        <li>Reports comply with IPC, IATF 16949, and AEC automotive standards</li>
+                        <li>Digital certificates and audit trails are included</li>
+                        <li>Urgent requests may require additional verification</li>
+                    </ul>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn">
+                        🚀 Submit Quality Report Request
+                    </button>
+                    <p style="margin-top: 15px; color: #7f8c8d; font-size: 0.9rem;">
+                        Your request will be processed automatically and you'll receive confirmation via email
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Priority selection functionality
+        const priorityOptions = document.querySelectorAll('.priority-option');
+        const priorityInput = document.getElementById('priority');
+
+        priorityOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                priorityOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                priorityInput.value = option.dataset.priority;
+            });
+        });
+
+        // Set default priority
+        document.querySelector('[data-priority="low"]').classList.add('selected');
+
+        // Auto-populate current date as minimum delivery date
+        const today = new Date();
+        today.setDate(today.getDate() + 1); // Tomorrow as minimum
+        document.getElementById('deliveryDate').min = today.toISOString().split('T')[0];
+        
+        // Set default delivery date to 5 days from now
+        const defaultDate = new Date();
+        defaultDate.setDate(defaultDate.getDate() + 5);
+        document.getElementById('deliveryDate').value = defaultDate.toISOString().split('T')[0];
+
+        // Form validation
+        document.getElementById('qualityReportForm').addEventListener('submit', function(e) {
+            // Validate required test parameters
+            const testParams = document.querySelectorAll('input[name="testParams"]:checked');
+            if (testParams.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one test parameter.');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
